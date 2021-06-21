@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!--<script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/ThrowPropsPlugin.min.js'></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.0/gsap.js" integrity="sha512-arIqMGA24vX+84HR9Ou5uU2GH5nM5bT6H4yItkBFhlWETF+2K9MlKf5Chw6CPYD/B8xPTC3brp2ZC35XpsN2Ng==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/TweenMax.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/utils/Draggable.min.js'></script>
+    <title>Title</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            min-height: 100%;
+            font-family: Roboto, sans-serif;
+            background: #e2e0e0;
+        }
+
+        main {
+            display: flex;
+            position: relative;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cell {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            font-size: 26px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.87);
+            color: rgba(0, 0, 0, 0.92);
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eee;
+
+            height: 100%;
+            transform-origin: center bottom;
+            border: 1px soild black;
+        }
+
+        .cell-content {
+        }
+
+        .picker {
+            background-color: black;
+            position: relative;
+            overflow: hidden;
+            width: 400px;
+            border-radius: 2px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+            0 1px 10px 0 rgba(0, 0, 0, 0.12);
+        }
+
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let gsap = window.gsap;
+            console.log("(:)===>", gsap);
+            let TweenLite = gsap.timeline();
+            let TimelineMax = window.TimelineMax;
+            let Draggable = window.Draggable;
+
+            let cellWidth = 150;
+            let picker = document.querySelector("#picker");
+            let cells = document.querySelectorAll(".cell");
+            let proxy = document.createElement("div");
+
+            let numCells = cells.length;
+            let cellStep = 1 / numCells;
+            let wrapWidth = cellWidth * numCells;
+
+            let baseTl = new TimelineMax({paused: true}, 5);
+            TweenLite.set(picker, {
+                //perspective: 1100,
+                width: wrapWidth - cellWidth
+            });
+
+            for (var i = 0; i < cells.length; i++) {
+                initCell(cells[i], i);
+            }
+
+            let animation = new TimelineMax({repeat: -1, paused: true})
+                .add(baseTl.tweenFromTo(1, 2))
+
+            let draggable = Draggable.create(proxy, {
+                // allowContextMenu: true,
+                type: "x",
+                trigger: picker,
+                throwProps: true,
+                onDrag: updateProgress,
+                onThrowUpdate: updateProgress,
+                snap: {
+                    x: snapX
+                },
+                onThrowComplete: function () {
+                    console.log("onThrowComplete");
+                    //TODO: animation that inject selected card title
+                }
+            });
+
+            function snapX(x) {
+                return Math.round(x / cellWidth) * cellWidth;
+            }
+
+            function updateProgress() {
+                animation.progress(this.x / wrapWidth);
+            }
+
+            function initCell(element, index) {
+
+                TweenLite.set(element, {
+                    width: cellWidth,
+                    scale: 0.6,
+                    //rotationX: rotationX,
+                    x: -cellWidth
+                });
+
+                var tl = new TimelineMax({repeat: 1})
+                    .to(element, 1, {x: "+=" + wrapWidth/*, rotationX: -rotationX*/}, 0)
+                    .to(element, cellStep, {color: "#009688", scale: 1, repeat: 1, yoyo: true}, 0.5 - cellStep)
+
+                baseTl.add(tl, i * -cellStep);
+            }
+
+        })
+    </script>
+</head>
+<body>
+<div id="picker" class="picker">
+    <div class="cell">
+        <div class="cell-content">Card 1</div>
+    </div>
+    <div class="cell">
+        <div class="cell-content">Card 2</div>
+    </div>
+    <div class="cell">
+        <div class="cell-content">Card 3</div>
+    </div>
+    <div class="cell">
+        <div class="cell-content">Card 4</div>
+    </div>
+    <div class="cell">
+        <div class="cell-content">Card 5</div>
+    </div>
+    <div class="cell">
+        <div class="cell-content">Card 6</div>
+    </div>
+    <div class="cell">
+        <div class="cell-content">Card 7</div>
+    </div>
+    <div class="cell">
+        <div class="cell-content">Card 8</div>
+    </div>
+</div>
+</body>
+</html>
