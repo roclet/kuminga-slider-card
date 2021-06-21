@@ -6,6 +6,9 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Logo from "./mtnlogo.png";
 import dot from "./dot.png";
+import search from "./search.svg";
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 
 export default class GoodProgress extends React.Component {
   constructor(props) {
@@ -24,6 +27,8 @@ export default class GoodProgress extends React.Component {
         { title: "Add a Phone-line" },
       ],
       wrapWidth: 0,
+      status : true,
+      searchStatus : false
     };
   }
 
@@ -44,7 +49,7 @@ export default class GoodProgress extends React.Component {
     var cells = gsap.utils.toArray(".cell");
     var proxy = document.createElement("div");
 
-    var cellWidth = 450;
+    var cellWidth = 320;
     //var rotationX = 90;
     var numCells = cells.length;
     var cellStep = 1 / numCells;
@@ -98,31 +103,46 @@ export default class GoodProgress extends React.Component {
     });
 
     function snapX(x) {
-      console.log("snapX > ", Math.round(x / cellWidth) * cellWidth);
       return Math.round(x / cellWidth) * cellWidth;
     }
 
     function updateProgress() {
-      console.log("updateProgress X > ", this.x);
       animation.progress(wrapProgress(this.x / wrapWidth));
     }
 
     function initCell(element, index) {
-      console.log("initCell>>> ", element, " > ", index);
       gsap.set(element, {
         width: cellWidth,
         scale: 0.6,
         //rotationX: rotationX,
         x: -cellWidth,
+        margin: "auto"
       });
 
       var tl = gsap
         .timeline({ repeat: 1 })
-        .to(element, 1, { x: "+=" + wrapWidth /*, rotationX: -rotationX*/ }, 0)
+        .to(
+          element,
+          1,
+          {
+            x: "+=" + wrapWidth /*, rotationX: -rotationX*/,
+            marginLeft: "0px",
+          },
+          0
+        )
         .to(
           element,
           cellStep,
-          { color: "#000000", scale: 1, repeat: 1, yoyo: true },
+          {
+            color: "#000000",
+            borderBottom: "5px solid #ffc300",
+            fontSize: "25px",
+            height: "600px",
+            fontWeight: 700,
+            scale: 1,
+            repeat: 1,
+            yoyo: true,
+          },
           0.5 - cellStep
         );
       baseTl.add(tl, i * -cellStep);
@@ -145,6 +165,7 @@ export default class GoodProgress extends React.Component {
     this.setState({
       index: i,
       baseTl: baseTl,
+      status: false
     });
   };
 
@@ -165,6 +186,7 @@ export default class GoodProgress extends React.Component {
     this.setState({
       index: i,
       baseTl: baseTl,
+      status: false
     });
   };
 
@@ -173,139 +195,203 @@ export default class GoodProgress extends React.Component {
     return data[index].title;
   };
 
+  openSearch = () => {
+   this.setState({
+    searchStatus: true
+   })
+  }
+
   render() {
     let data = this.state.data;
     return (
-      <main>
-        <div class="navbar-brand">
-          <a href="#home" class="active">
-            <img src={Logo} alt="" class="img-fluid" height="100" />
-          </a>
-          <a href="#news">Store</a>
-          <a href="#contact">Products & Services</a>
-          <a href="#about">Help & Support</a>
-          <div
-            class="w3-bar w3-theme w3-xlarge"
-            style={styles.navStylew3xlarge}
+      <div class="content" role="main">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light l-navbar">
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarTogglerDemo01"
+            aria-controls="navbarTogglerDemo01"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
           >
-            <a class="w3-bar-item w3-button w3-right" href="#">
-              <i class="fa fa-search"></i>
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <a class="navbar-brand" href="#">
+              <img src={Logo} alt="" class="img-fluid" />
             </a>
-            <span class="w3-bar-item" style={styles.w3BarItem}>
-              <img src={dot} style={styles.img} />
-              Personal
-            </span>
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+              <li class="nav-item active">
+                <a class="nav-link" href="#">
+                  Store <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  Products & Services
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  Help & Support
+                </a>
+              </li>
+            </ul>
+            <form class="d-flex">
+              <ul class="list-inline mt-4 mb-2 mtn-search">
+                <li class="list-inline-item me-4" onClick={this.openSearch}>
+                  <i class="fa fa-search"></i>
+                  <img src={search} />
+                </li>
+                <li class="list-inline-item me-4">
+                  <div class="input-group mb-2">
+                  {this.state.searchStatus &&<TextField id="standard-basic" label="" />}
+                    <a
+                      href="#"
+                      id="navbarDropdownMenuLink"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="true"
+                      class="nav-link dropdown-toggle"
+                    >
+                      <img src={dot} style={styles.img} />
+                      Personal
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a href="#" class="dropdown-item">
+                          individual
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" class="dropdown-item">
+                          business
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+            </form>
           </div>
-        </div>
-        <div id="picker" className="picker">
-          <div className="cell">
-            <div className="cell-content">
-              <div>
-                <img
-                  class="card-sm-image"
-                  src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
-                />
+        </nav>
+        <main>
+          <div id="picker" className="picker">
+            <div className="cell">
+              <div className="cell-content">
+                <div>
+                  <img
+                    class="card-sm-image"
+                    src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
+                  />
+                </div>
+                <br />
+                <div class="card-title">{this.getContent(0)}</div>
               </div>
-              <br />
-              <div>{this.getContent(0)}</div>
+            </div>
+            <div className="cell">
+              <div className="cell-content">
+                <div>
+                  <img
+                    class="card-sm-image"
+                    src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
+                  />
+                </div>
+                <br />
+                <div class="card-title">{this.getContent(1)}</div>
+              </div>
+            </div>
+            <div className="cell">
+              <div className="cell-content">
+                <div class="middle-card">
+                  <img
+                    class="card-sm-image"
+                    src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
+                  />
+                </div>
+                <br />
+                <div class="card-title">{this.getContent(2)}</div>
+              </div>
+            </div>
+            <div className="cell">
+              <div className="cell-content">
+                <div>
+                  <img
+                    class="card-sm-image"
+                    src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
+                  />
+                </div>
+                <br />
+                <div class="card-title">{this.getContent(3)}</div>
+                <div class="btn-start">
+                  {this.state.status && <a class="card-action">
+                    START HERE
+                    <NavigateNextIcon />
+                  </a>}
+                </div>
+              </div>
+            </div>
+            <div className="cell">
+              <div className="cell-content">
+                <div>
+                  <img
+                    class="card-sm-image"
+                    src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
+                  />
+                </div>
+                <br />
+                <div class="card-title">{this.getContent(4)}</div>
+              </div>
+            </div>
+            <div className="cell">
+              <div className="cell-content">
+                <div>
+                  <img
+                    class="card-sm-image"
+                    src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
+                  />
+                </div>
+                <br />
+                <div class="card-title">{this.getContent(5)}</div>
+              </div>
+            </div>
+            <div className="cell">
+              <div className="cell-content">
+                <div>
+                  <img
+                    class="card-sm-image"
+                    src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
+                  />
+                </div>
+                <br />
+                <div class="card-title">{this.getContent(6)}</div>
+              </div>
+            </div>
+            <div className="cell">
+              <div className="cell-content">
+                <div>
+                  <img
+                    class="card-sm-image"
+                    src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
+                  />
+                </div>
+                <br />
+                <div class="card-title">{this.getContent(7)}</div>
+              </div>
             </div>
           </div>
-          <div className="cell">
-            <div className="cell-content">
-              <div>
-                <img
-                  class="card-sm-image"
-                  src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
-                />
-              </div>
-              <br />
-              <div>{this.getContent(1)}</div>
+          <div style={styles.navSlide}>
+            <div style={styles.midleBox}>
+              <button style={styles.btn1} onClick={this.backSlide}>
+                <ChevronLeftIcon />
+              </button>
+              <button style={styles.btn2} onClick={this.nextSlide}>
+                <NavigateNextIcon />
+              </button>
             </div>
           </div>
-          <div className="cell">
-            <div className="cell-content">
-              <div>
-                <img
-                  class="card-sm-image"
-                  src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
-                />
-              </div>
-              <br />
-              <div>{this.getContent(2)}</div>
-            </div>
-          </div>
-          <div className="cell">
-            <div className="cell-content">
-              <div>
-                <img
-                  class="card-sm-image"
-                  src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
-                />
-              </div>
-              <br />
-              <div>{this.getContent(3)}</div>
-            </div>
-          </div>
-          <div className="cell">
-            <div className="cell-content">
-              <div>
-                <img
-                  class="card-sm-image"
-                  src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
-                />
-              </div>
-              <br />
-              <div>{this.getContent(4)}</div>
-            </div>
-          </div>
-          <div className="cell">
-            <div className="cell-content">
-              <div>
-                <img
-                  class="card-sm-image"
-                  src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
-                />
-              </div>
-              <br />
-              <div>{this.getContent(5)}</div>
-            </div>
-          </div>
-          <div className="cell">
-            <div className="cell-content">
-              <div>
-                <img
-                  class="card-sm-image"
-                  src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
-                />
-              </div>
-              <br />
-              <div>{this.getContent(6)}</div>
-            </div>
-          </div>
-          <div className="cell">
-            <div className="cell-content">
-              <div>
-                <img
-                  class="card-sm-image"
-                  src="http://www.bilingo.co.za/mtn-digital/assets/small-card.png"
-                />
-              </div>
-              <br />
-              <div>{this.getContent(7)}</div>
-            </div>
-          </div>
-        </div>
-        <div style={styles.navSlide}>
-          <div style={styles.midleBox}>
-            <button style={styles.btn} onClick={this.backSlide}>
-              <ChevronLeftIcon />
-            </button>
-            <button style={styles.btn} onClick={this.nextSlide}>
-              <NavigateNextIcon />
-            </button>
-          </div>
-        </div>
-      </main>
+        </main>
+      </div>
     );
   }
 }
@@ -322,8 +408,8 @@ const styles = {
     width: "10px",
     marginRight: "10px",
   },
-  btn: {
-    margin: 30,
+  btn1: {
+    marginRight: 250,
     minHeight: 50,
     maxHeight: 50,
     minWidth: 50,
@@ -333,6 +419,20 @@ const styles = {
     color: "white",
     fontWeight: "bold",
     fontSize: 16,
+    marginTop: 60,
+  },
+  btn2: {
+    marginLeft: 250,
+    minHeight: 50,
+    maxHeight: 50,
+    minWidth: 50,
+    maxWidth: 50,
+    borderRadius: 25,
+    backgroundColor: "black",
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginTop: 60,
   },
   navSlide: {
     display: "flex",
@@ -369,7 +469,6 @@ const styles = {
   picker: {
     display: "flex",
     flexDirection: "row",
-    /*backgroundColor: "green",*/
     position: "absolute",
     overflow: "hidden",
     width: 400,
@@ -388,7 +487,6 @@ const styles = {
     /*overflow: "hidden",*/
     alignItems: "center",
     justifyContent: "center",
-    /* backgroundColor: "red",*/
     padding: 20,
   },
 };
